@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Şifre Oluşturucu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="./output.css" rel="stylesheet">
+</head>
+<body class="bg-rose-50 min-h-screen flex items-center justify-center px-4">
+
+  <div class="bg-white shadow-xl rounded-xl p-6 max-w-md w-full space-y-6">
+    <h1 class="text-3xl font-bold text-center text-black">🔐Şifre Oluşturucu</h1>
+
+    <div>
+      <label for="length" class="block font-semibold text-gray-700 mb-1">Şifre Uzunluğu:</label>
+      <input type="number" id="length" min="4" max="64" placeholder="Örn: 12" 
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+    </div>
+
+    <div>
+      <label class="block font-semibold text-gray-700 mb-2">Karakter Tipleri:</label>
+      <div class="space-y-1 text-gray-700">
+        <label><input type="checkbox" id="uppercase" class="mr-2">Büyük Harf (🅰️-💤)</label><br>
+        <label><input type="checkbox" id="lowercase" class="mr-2">Küçük Harf (a-z)</label><br>
+        <label><input type="checkbox" id="numbers" class="mr-2">Rakam (0️⃣-9️⃣)</label><br>
+        <label><input type="checkbox" id="symbols" class="mr-2">Sembol (❗#️⃣...)</label>
+      </div>
+    </div>
+
+    <button id="generate"
+      class="w-full bg-rose-400 hover:bg-rose-200 text-black py-2 rounded-md font-semibold transition">Şifre Oluştur</button>
+
+    <div id="result"
+      class="bg-rose-100 p-3 text-center text-lg font-mono rounded-md text-gray-800 select-all">
+      Şifrenizi Buradan Kopyalayabilirsiniz.
+    </div>
+
+    <button id="copy"
+      class="w-full bg-blue-600 hover:bg-sky-500 text-black py-2 rounded-md font-semibold transition">📋Kopyala</button>
+  </div>
+
+  <script>
+    const lengthInput = document.getElementById("length");
+    const uppercaseEl = document.getElementById("uppercase");
+    const lowercaseEl = document.getElementById("lowercase");
+    const numbersEl = document.getElementById("numbers");
+    const symbolsEl = document.getElementById("symbols");
+    const generateBtn = document.getElementById("generate");
+    const resultEl = document.getElementById("result");
+    const copyBtn = document.getElementById("copy");
+
+    generateBtn.addEventListener("click", () => {
+      const length = parseInt(lengthInput.value);
+      const includeUpper = uppercaseEl.checked;
+      const includeLower = lowercaseEl.checked;
+      const includeNumber = numbersEl.checked;
+      const includeSymbol = symbolsEl.checked;
+
+      if (isNaN(length) || length < 4) {
+        alert("Şifre uzunluğu en az 4 olmalı!");
+        return;
+      }
+
+      if (!includeUpper && !includeLower && !includeNumber && !includeSymbol) {
+        alert("En az bir karakter tipi seçmelisiniz!");
+        return;
+      }
+
+      const password = generatePassword(length, includeUpper, includeLower, includeNumber, includeSymbol);
+      resultEl.textContent = password;
+    });
+
+    function generatePassword(length, upper, lower, number, symbol) {
+      const upperSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lowerSet = "abcdefghijklmnopqrstuvwxyz";
+      const numberSet = "0123456789";
+      const symbolSet = "!@#$%^&*()_+[]{}|;:,.<>?";
+
+      let pool = "";
+      if (upper) pool += upperSet;
+      if (lower) pool += lowerSet;
+      if (number) pool += numberSet;
+      if (symbol) pool += symbolSet;
+
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const rand = Math.floor(Math.random() * pool.length);
+        password += pool[rand];
+      }
+
+      return password;
+    }
+
+    copyBtn.addEventListener("click", () => {
+      const password = resultEl.textContent;
+      if (password && password !== "Şifreniz burada görünecek") {
+        navigator.clipboard.writeText(password)
+          .then(() => alert("Şifre panoya kopyalandı!"))
+          .catch(() => alert("Kopyalama başarısız oldu."));
+      }
+    });
+  </script>
+
+</body>
+</html>

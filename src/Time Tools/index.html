@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zaman Araçları</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="./output.css" rel="stylesheet">
+</head>
+<body class="bg-rose-50 text-black font-sans">
+
+  <section class="min-h-screen flex flex-col justify-center items-center shadow-inner">
+    <h1 class="text-amber-900 text-3xl font-bold mb-4">🕰️Gerçek Zamanlı Saat</h1>
+    <div id="clock" class="text-6xl font-mono">--:--:--</div>
+  </section>
+
+  <section class="min-h-screen flex flex-col justify-center items-center shadow-inner">
+    <h2 class="text-3xl font-bold mb-4">⏱️Start / Stop Kronometre</h2>
+    <div id="chrono-display" class="text-5xl font-bold text-rose-400 mb-6">00:00:00</div>
+    <div class="space-x-4">
+      <button onclick="startChrono()" class="bg-fuchsia-800 hover:bg-fuchsia-500 text-white px-4 py-2 rounded">Start</button>
+      <button onclick="stopChrono()" class="bg-pink-700 hover:bg-pink-500 text-white px-4 py-2 rounded">Stop</button>
+      <button onclick="resetChrono()" class="bg-black hover:bg-gray-700 text-white px-4 py-2 rounded">Reset</button>
+    </div>
+  </section>
+
+  <section class="min-h-screen flex flex-col justify-center items-center shadow-inner">
+    <h2 class="text-3xl font-bold mb-4">⏳Geri Sayım Sayacı</h2>
+    <div class="flex space-x-2 mb-4">
+      <input id="minutes" type="number" placeholder="Dakika" class="w-24 border px-3 py-2 rounded text-center" />
+      <input id="seconds" type="number" placeholder="Saniye" class="w-24 border px-3 py-2 rounded text-center" />
+      <button onclick="startCountdown()" class="bg-rose-500 hover:bg-rose-300 text-black px-4 py-2 rounded">Başlat</button>
+    </div>
+    <div id="countdown-display" class="text-4xl font-bold text-rose-400">--:--</div>
+  </section>
+
+  <script>
+    
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById("clock").textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 
+    
+    let chronoSeconds = 0;
+    let chronoInterval = null;
+
+    function formatChrono(s) {
+      const h = String(Math.floor(s / 3600)).padStart(2, '0');
+      const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${h}:${m}:${sec}`;
+    }
+
+    function updateChronoDisplay() {
+      document.getElementById("chrono-display").textContent = formatChrono(chronoSeconds);
+    }
+
+    function startChrono() {
+      if (!chronoInterval) {
+        chronoInterval = setInterval(() => {
+          chronoSeconds++;
+          updateChronoDisplay();
+        }, 1000);
+      }
+    }
+
+    function stopChrono() {
+      clearInterval(chronoInterval);
+      chronoInterval = null;
+    }
+
+    function resetChrono() {
+      stopChrono();
+      chronoSeconds = 0;
+      updateChronoDisplay();
+    }
+
+    updateChronoDisplay();
+
+    //
+
+    let countdownInterval = null;
+
+    function startCountdown() {
+      const mins = parseInt(document.getElementById("minutes").value) || 0;
+      const secs = parseInt(document.getElementById("seconds").value) || 0;
+      let total = mins * 60 + secs;
+
+      clearInterval(countdownInterval);
+
+      countdownInterval = setInterval(() => {
+        if (total <= 0) {
+          clearInterval(countdownInterval);
+          document.getElementById("countdown-display").textContent = "Süre Doldu!";
+        } else {
+          total--;
+          const m = String(Math.floor(total / 60)).padStart(2, '0');
+          const s = String(total % 60).padStart(2, '0');
+          document.getElementById("countdown-display").textContent = `${m}:${s}`;
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

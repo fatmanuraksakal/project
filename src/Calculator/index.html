@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hesap Makinesi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="./output.css" rel="stylesheet">
+</head>
+<body class="bg-rose-50 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white p-6 rounded-2xl shadow-xl w-80">
+
+    <div id="display" class="bg-rose-200 text-right text-3xl p-4 rounded mb-4 min-h-[64px]"></div>
+
+
+    <div class="grid grid-cols-4 gap-4 text-lg">
+      <button class="btn bg-pink-700 rounded" data-action="clear">C</button>
+      <button class="btn" data-action="%">%</button>
+      <button class="btn" data-action="/">÷</button>
+      <button class="btn" data-action="back">←</button>
+
+      <button class="btn" data-action="7">7</button>
+      <button class="btn" data-action="8">8</button>
+      <button class="btn" data-action="9">9</button>
+      <button class="btn" data-action="*">×</button>
+
+      <button class="btn" data-action="4">4</button>
+      <button class="btn" data-action="5">5</button>
+      <button class="btn" data-action="6">6</button>
+      <button class="btn" data-action="-">−</button>
+
+      <button class="btn" data-action="1">1</button>
+      <button class="btn" data-action="2">2</button>
+      <button class="btn" data-action="3">3</button>
+      <button class="btn" data-action="+">+</button>
+
+      <button class="btn col-span-2" data-action="0">0</button>
+      <button class="btn" data-action=".">.</button>
+      <button class="btn bg-gray-500 rounded" data-action="=">=</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('.btn');
+    let current = '';
+    let decimalUsed = false;
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-action');
+
+        if (!isNaN(action)) {
+          current += action;
+        } else if (action === '.') {
+          if (!decimalUsed) {
+            if (current === '' || isNaN(current.slice(-1))) current += '0';
+            current += '.';
+            decimalUsed = true;
+          }
+        } else if (['+', '-', '*', '/'].includes(action)) {
+          if (current && !['+', '-', '*', '/'].includes(current.slice(-1))) {
+            current += action;
+            decimalUsed = false;
+          }
+        } else if (action === 'clear') {
+          current = '';
+          decimalUsed = false;
+        } else if (action === 'back') {
+          if (current.slice(-1) === '.') decimalUsed = false;
+          current = current.slice(0, -1);
+        } else if (action === '%') {
+          try {
+            current = (parseFloat(eval(current)) / 100).toString();
+          } catch {
+            current = 'Hata';
+          }
+        } else if (action === '=') {
+          try {
+            current = eval(current).toString();
+          } catch {
+            current = 'Hatalı Sonuç';
+          }
+        }
+
+        display.textContent = current || '0';
+      });
+    });
+  </script>
+
+</body>
+</html>
